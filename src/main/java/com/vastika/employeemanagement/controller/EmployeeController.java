@@ -1,0 +1,63 @@
+package com.vastika.employeemanagement.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.vastika.employeemanagement.model.Employee;
+import com.vastika.employeemanagement.service.EmployeeService;
+
+@Controller
+public class EmployeeController {
+	
+	private final EmployeeService employeeService;
+	
+	@Autowired
+	public EmployeeController(EmployeeService employeeService) {    // creating constructor construction dependency injection
+		this.employeeService = employeeService;
+	}
+	
+	// create a constructor for getEmployeeForm to open the page
+	
+	@RequestMapping("/add_employee")    			
+	public String getEmployeeForm() {
+		return "createEmployee";
+	}
+	
+	@RequestMapping(value="/save_employee", method=RequestMethod.POST)
+	public String saveEmployeeInfo(@ModelAttribute Employee employee) {
+		employeeService.saveEmployeeInfo(employee);
+		return "redirect:/list_employee";
+		
+	}
+	@GetMapping("/list_employee")				// creating method for getAllEmployeeInfo get method
+	public String getAllEmployeeInfo(Model model){
+		model.addAttribute("employees", employeeService.getAllEmployeeInfo());
+		return "listEmployee";
+	}
+	
+	@GetMapping("/delete_employee")
+	public String deleteEmployeeInfo(@RequestParam int id) {
+		employeeService.deleteEmployeeInfo(id);
+		return "redirect:/list_employee";
+		
+	}
+	
+	@GetMapping("/edit_employee")    			
+	public String getEditEmployeeForm(@RequestParam int id, Model model) {
+		model.addAttribute("employee", employeeService.getEmployeeInfoById(id));
+		
+		return "editEmployee";
+	}
+	@PostMapping("/update_employee")
+	public String updateEmployeeInfo(@ModelAttribute Employee employee) {
+		employeeService.saveEmployeeInfo(employee);
+		return "redirect:/list_employee"; 
+	}
+}
